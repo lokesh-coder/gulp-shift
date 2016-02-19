@@ -68,30 +68,29 @@ var _format_snippet = function(snippet) {
 
 var _shift_snippet = function(name, snippet, file) {
 
-	return gulp.src(file)
+	return gulp.src(file, {
+			base: './'
+		})
 		.pipe(map(function(file, cb) {
 			var contents = file.contents.toString('utf8');
-			var position=contents;
-			var ori=contents;
+			var position = contents;
+			var ori = contents;
 			ori = ori.replace(/\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/, "//##shifthere:$1:$2");
 
 			var oriReg = /\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/;
 			var oriMatch = oriReg.exec(ori);
 
-
-
-
 			var myRegexp = /\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/;
 			var match = myRegexp.exec(position);
 
-			if(match[2]=='after' && match[1]==name)
-				contents = contents.replace(/\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/, oriMatch[0]+'\n'+snippet);
-			else if( match[1]==name)
-				contents = contents.replace(/\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/, snippet+'\n'+oriMatch[0]);
+			if (match[2] == 'after' && match[1] == name)
+				contents = contents.replace(/\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/, oriMatch[0] + '\n' + snippet);
+			else if (match[1] == name)
+				contents = contents.replace(/\/\/##shifthere:([a-z0-9A-Z]+):([a-zA-Z0-9]+)/, snippet + '\n' + oriMatch[0]);
 
 			console.log(contents);
 			file.contents = new Buffer(contents, 'utf8');
 			cb(null, file);
-		}));
+		})).pipe(gulp.dest(path.dirname(file)));
 
 };
